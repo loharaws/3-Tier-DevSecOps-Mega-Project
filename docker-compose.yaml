@@ -20,14 +20,12 @@ services:
       - mysql-data:/var/lib/mysql
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
 
-    # ✅ FIXED HEALTHCHECK (important)
     healthcheck:
-      test: ["CMD-SHELL", "mysql -uroot -prootpass -e 'SELECT 1' || exit 1"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpass"]
       interval: 10s
       timeout: 5s
-      retries: 10
-      start_period: 30s
-
+      retries: 20
+      start_period: 30s   # IMPORTANT
 
   backend:
     build:
@@ -47,10 +45,9 @@ services:
       DB_USER: admin
       DB_PASSWORD: admin123
 
-    # ✅ Recommended (avoid strict failure)
     depends_on:
-      - mysql
-
+      mysql:
+        condition: service_healthy
 
   frontend:
     build:
@@ -65,7 +62,6 @@ services:
 
     depends_on:
       - backend
-
 
 volumes:
   mysql-data:
