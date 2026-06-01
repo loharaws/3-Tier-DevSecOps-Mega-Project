@@ -8,11 +8,10 @@ services:
     restart: always
 
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE: crud_app
-      MYSQL_USER: root
-      MYSQL_PASSWORD: Aditya
-
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     ports:
       - "3306:3306"
 
@@ -34,9 +33,9 @@ services:
       DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: crud_app
-      DB_USER: root
-      DB_PASSWORD: Aditya
-      JWT_SECRET: devopsShackSuperSecretKey
+      DB_USER: admin
+      DB_PASSWORD: admin123
+     
 
     depends_on:
       - mysql
