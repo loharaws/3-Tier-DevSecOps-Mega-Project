@@ -9,7 +9,7 @@ services:
 
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mydb
+      MYSQL_DATABASE: crud_app
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
 
@@ -33,7 +33,7 @@ services:
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_NAME: mydb
+      DB_NAME: crud_app
       DB_USER: admin
       DB_PASSWORD: admin
 
