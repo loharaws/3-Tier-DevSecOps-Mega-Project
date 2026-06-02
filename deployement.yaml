@@ -141,7 +141,7 @@ kind: Deployment
 metadata:
 name: backend
 spec:
-replicas: 2
+replicas: 1
 
 selector:
 matchLabels:
@@ -157,7 +157,7 @@ spec:
   containers:
   - name: backend
 
-    image: YOUR_DOCKERHUB_USERNAME/backend:latest
+    image: yashwantlohar/backend:latest
 
     ports:
     - containerPort: 5000
@@ -214,7 +214,7 @@ metadata:
 name: frontend
 
 spec:
-replicas: 2
+replicas: 1
 
 selector:
 matchLabels:
@@ -230,7 +230,7 @@ spec:
   containers:
   - name: frontend
 
-    image: YOUR_DOCKERHUB_USERNAME/frontend:latest
+    image: yashwantlohar/frontend:latest
 
     ports:
     - containerPort: 80
