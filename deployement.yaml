@@ -32,7 +32,7 @@ kind: ConfigMap
 metadata:
   - name: mysql-init-script
 data:
-init.sql: |
+  init.sql: |
 CREATE DATABASE IF NOT EXISTS crud_app;
 
 ```
