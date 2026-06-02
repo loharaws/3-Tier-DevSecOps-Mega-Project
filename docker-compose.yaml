@@ -21,7 +21,7 @@ services:
       - app-network
 
   backend:
-    build: ./backend
+    build: ./api
     container_name: backend
 
     depends_on:
@@ -41,7 +41,7 @@ services:
       - app-network
 
   frontend:
-    build: ./frontend
+    build: ./client
     container_name: frontend
 
     depends_on:
