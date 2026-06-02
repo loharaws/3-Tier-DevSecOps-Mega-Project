@@ -18,14 +18,36 @@ services:
 
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./mysql/init:/docker-entrypoint-initdb.d:ro
 
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpass"]
       interval: 10s
       timeout: 5s
       retries: 20
-      start_period: 30s   # IMPORTANT
+      start_period: 30s
+
+  db-init:
+    image: mysql:8.0
+    container_name: db-init
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    command: >
+      sh -c "
+      mysql -h mysql -u admin -padmin123 crud_app -e '
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        role ENUM(\"admin\", \"viewer\") NOT NULL DEFAULT \"viewer\",
+        is_active TINYINT(1) DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      '
+      "
 
   backend:
     build:
@@ -48,6 +70,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
 
   frontend:
     build:
