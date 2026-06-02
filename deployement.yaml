@@ -2,21 +2,40 @@
 # ==========================================
 # MySQL Persistent Volume Claim
 # ==========================================
+---
+
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mysql-pvc
+name: mysql-pv
+
 spec:
-  capacity:
-    storage: 2Gi
+capacity:
+storage: 2Gi
 
-  accessModes:
-    - ReadWriteOnce
+accessModes:
+- ReadWriteOnce
 
-  persistentVolumeReclaimPolicy: Retain
+persistentVolumeReclaimPolicy: Retain
 
-  hostPath:
-    path: /data/mysql
+hostPath:
+path: /data/mysql
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+name: mysql-pvc
+
+spec:
+accessModes:
+- ReadWriteOnce
+
+resources:
+requests:
+storage: 1Gi
+
 
 ---
 # ==========================================
