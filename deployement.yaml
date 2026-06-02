@@ -1,261 +1,221 @@
-# three-tier-k8s.yaml
-
 ---
-
 # ==========================================
-
 # MySQL Persistent Volume Claim
-
 # ==========================================
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
-
 spec:
   accessModes:
     - ReadWriteOnce
-
   resources:
     requests:
       storage: 1Gi
 
+---
 # ==========================================
-
 # MySQL ConfigMap (init.sql)
-
 # ==========================================
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  - name: mysql-init-script
+  name: mysql-init-script
 data:
   init.sql: |
-CREATE DATABASE IF NOT EXISTS crud_app;
+    CREATE DATABASE IF NOT EXISTS crud_app;
 
-USE crud_app;
+    USE crud_app;
 
-CREATE TABLE IF NOT EXISTS users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
-  role ENUM('admin','viewer') DEFAULT 'viewer',
-  is_active TINYINT(1) DEFAULT 1,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      password VARCHAR(255) NOT NULL,
+      role ENUM('admin','viewer') DEFAULT 'viewer',
+      is_active TINYINT(1) DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
-
-
-
+---
 # ==========================================
-
 # MySQL Deployment
-
 # ==========================================
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  - name: mysql
+  name: mysql
 spec:
-replicas: 1
-selector:
-  matchLabels:
-    app: mysql
-template:
-  metadata:
-    labels:
+  replicas: 1
+  selector:
+    matchLabels:
       app: mysql
-spec:
-containers:
-  - name: mysql
-    image: mysql:8.0
-ports:
-  - containerPort: 3306
 
-```
-    env:
-    - name: MYSQL_ROOT_PASSWORD
-      value: root123
+  template:
+    metadata:
+      labels:
+        app: mysql
 
-    - name: MYSQL_DATABASE
-      value: crud_app
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
 
-    - name: MYSQL_USER
-      value: admin
+          ports:
+            - containerPort: 3306
 
-    - name: MYSQL_PASSWORD
-      value: admin123
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: root123
 
-    volumeMounts:
-    - name: mysql-storage
-      mountPath: /var/lib/mysql
+            - name: MYSQL_DATABASE
+              value: crud_app
 
-    - name: init-script
-      mountPath: /docker-entrypoint-initdb.d
+            - name: MYSQL_USER
+              value: admin
 
-  volumes:
-  - name: mysql-storage
-    persistentVolumeClaim:
-      claimName: mysql-pvc
+            - name: MYSQL_PASSWORD
+              value: admin123
 
-  - name: init-script
-    configMap:
-      name: mysql-init-script
-```
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d
+
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+
+        - name: init-script
+          configMap:
+            name: mysql-init-script
 
 ---
-
 # ==========================================
-
 # MySQL Service
-
 # ==========================================
-
 apiVersion: v1
 kind: Service
 metadata:
-name: mysql
+  name: mysql
 spec:
-selector:
-app: mysql
-ports:
+  selector:
+    app: mysql
 
-* port: 3306
-  targetPort: 3306
+  ports:
+    - port: 3306
+      targetPort: 3306
 
 ---
-
 # ==========================================
-
 # Backend Deployment
-
 # ==========================================
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  - name: backend
+  name: backend
+
 spec:
   replicas: 1
 
-selector:
-  matchLabels:
-    app: backend
-
-template:
-  metadata:
-    labels:
+  selector:
+    matchLabels:
       app: backend
 
-```
-spec:
-  containers:
-  - name: backend
+  template:
+    metadata:
+      labels:
+        app: backend
 
-    image: yashwantlohar/backend:latest
+    spec:
+      containers:
+        - name: backend
+          image: yashwantlohar/backend:latest
 
-    ports:
-    - containerPort: 5000
+          ports:
+            - containerPort: 5000
 
-    env:
-    - name: DB_HOST
-      value: mysql
+          env:
+            - name: DB_HOST
+              value: mysql
 
-    - name: DB_PORT
-      value: "3306"
+            - name: DB_PORT
+              value: "3306"
 
-    - name: DB_USER
-      value: admin
+            - name: DB_USER
+              value: admin
 
-    - name: DB_PASSWORD
-      value: admin123
+            - name: DB_PASSWORD
+              value: admin123
 
-    - name: DB_NAME
-      value: crud_app
-```
+            - name: DB_NAME
+              value: crud_app
 
 ---
-
 # ==========================================
-
 # Backend Service
-
 # ==========================================
-
 apiVersion: v1
 kind: Service
 metadata:
   name: backend
+
 spec:
   selector:
     app: backend
 
-ports:
-
-* port: 5000
-  targetPort: 5000
+  ports:
+    - port: 5000
+      targetPort: 5000
 
 ---
-
 # ==========================================
-
 # Frontend Deployment
-
 # ==========================================
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
 
 spec:
-replicas: 1
+  replicas: 1
 
-selector:
-  matchLabels:
-    app: frontend
-
-template:
-  metadata:
-    labels:
+  selector:
+    matchLabels:
       app: frontend
 
-```
-spec:
-  containers:
-  - name: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
 
-    image: yashwantlohar/frontend:latest
+    spec:
+      containers:
+        - name: frontend
+          image: yashwantlohar/frontend:latest
 
-    ports:
-    - containerPort: 80
-```
+          ports:
+            - containerPort: 80
 
 ---
-
 # ==========================================
-
 # Frontend Service
-
 # ==========================================
-
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend
 
 spec:
-type: NodePort
+  type: NodePort
 
-selector:
-  app: frontend
+  selector:
+    app: frontend
 
-ports:
-
-* port: 80
-  targetPort: 80
-  nodePort: 30080
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
