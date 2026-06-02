@@ -11,7 +11,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-name: mysql-pvc
+  - name: mysql-pvc
 spec:
 accessModes:
 - ReadWriteOnce
@@ -30,7 +30,7 @@ storage: 2Gi
 apiVersion: v1
 kind: ConfigMap
 metadata:
-name: mysql-init-script
+  - name: mysql-init-script
 data:
 init.sql: |
 CREATE DATABASE IF NOT EXISTS crud_app;
@@ -60,22 +60,22 @@ CREATE TABLE IF NOT EXISTS users (
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-name: mysql
+  - name: mysql
 spec:
 replicas: 1
 selector:
-matchLabels:
-app: mysql
+  matchLabels:
+    app: mysql
 template:
-metadata:
-labels:
-app: mysql
+  metadata:
+    labels:
+      app: mysql
 spec:
 containers:
-- name: mysql
-image: mysql:8.0
+  - name: mysql
+    image: mysql:8.0
 ports:
-- containerPort: 3306
+  - containerPort: 3306
 
 ```
     env:
@@ -139,18 +139,18 @@ ports:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-name: backend
+  - name: backend
 spec:
-replicas: 1
+  replicas: 1
 
 selector:
-matchLabels:
-app: backend
+  matchLabels:
+    app: backend
 
 template:
-metadata:
-labels:
-app: backend
+  metadata:
+    labels:
+      app: backend
 
 ```
 spec:
@@ -190,10 +190,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-name: backend
+  name: backend
 spec:
-selector:
-app: backend
+  selector:
+    app: backend
 
 ports:
 
@@ -211,19 +211,19 @@ ports:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-name: frontend
+  name: frontend
 
 spec:
 replicas: 1
 
 selector:
-matchLabels:
-app: frontend
+  matchLabels:
+    app: frontend
 
 template:
-metadata:
-labels:
-app: frontend
+  metadata:
+    labels:
+      app: frontend
 
 ```
 spec:
@@ -247,13 +247,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-name: frontend
+  name: frontend
 
 spec:
 type: NodePort
 
 selector:
-app: frontend
+  app: frontend
 
 ports:
 
