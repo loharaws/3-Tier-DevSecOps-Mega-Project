@@ -35,7 +35,6 @@ data:
   init.sql: |
 CREATE DATABASE IF NOT EXISTS crud_app;
 
-```
 USE crud_app;
 
 CREATE TABLE IF NOT EXISTS users (
@@ -47,9 +46,9 @@ CREATE TABLE IF NOT EXISTS users (
   is_active TINYINT(1) DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-```
 
----
+
+
 
 # ==========================================
 
